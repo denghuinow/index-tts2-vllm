@@ -3,25 +3,32 @@ version: '3.8'
 services:
   index-tts:
     build: .
-    image: index-tts-server
-    env_file:
-      - .env.example
-    container_name: index-tts-server
+    image: denghui/index-tts2-server:20260302
+    container_name: index-tts2-server
     ports:
-      - "${PORT:-8001}:${PORT:-8001}"
+      - "8001:8001"
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: all
+              device_ids: ['0']
               capabilities: [gpu]
     volumes:
     #   - ./audio_prompts:/app/audio_prompts
+      - ./examples:/app/examples
       - ./assets:/app/assets
-    restart: unless-stopped
+      - ./api_server_v2.py:/app/api_server_v2.py
+      - ./webui_v2.py:/app/webui_v2.py
+      - /data/models:/data/models
+    restart: no
+    # environment:
+      # - VLLM_USE_MODELSCOPE=1
+      # - VLLM_USE_V1=0
+    # entrypoint: python3 api_server_v2.py --model_dir /data/models/kusuriuri/IndexTTS-2-vLLM --port 8001 --gpu_memory_utilization=0.25
+    entrypoint: python webui_v2.py --model_dir /data/models/kusuriuri/IndexTTS-2-vLLM --port 8001 --gpu_memory_utilization=0.25
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8001}/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3

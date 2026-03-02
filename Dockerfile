@@ -22,6 +22,9 @@ COPY indextts /app/indextts
 COPY tools /app/tools
 COPY patch_vllm.py /app/patch_vllm.py
 COPY api_server.py /app/api_server.py
+COPY api_server_v2.py /app/api_server_v2.py
+COPY webui.py /app/webui.py
+COPY webui_v2.py /app/webui_v2.py
 COPY convert_hf_format.py /app/convert_hf_format.py
 COPY convert_hf_format.sh /app/convert_hf_format.sh
 COPY entrypoint.sh /app/entrypoint.sh

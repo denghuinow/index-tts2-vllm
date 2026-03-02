@@ -97,7 +97,7 @@ async def gen_single(emo_control_method,prompt, text,
             emo_ref_path, emo_weight,
             vec1, vec2, vec3, vec4, vec5, vec6, vec7, vec8,
             emo_text,emo_random,
-            max_text_tokens_per_sentence=120,
+            max_text_tokens_per_segment=120,
                 *args, progress=gr.Progress()):
     output_path = None
     if not output_path:
@@ -141,7 +141,7 @@ async def gen_single(emo_control_method,prompt, text,
                     emo_vector=vec,
                     use_emo_text=(emo_control_method==3), emo_text=emo_text,use_random=emo_random,
                     verbose=cmd_args.verbose,
-                    max_text_tokens_per_sentence=int(max_text_tokens_per_sentence),
+                    max_text_tokens_per_segment=int(max_text_tokens_per_segment),
                     **kwargs)
     return gr.update(value=output,visible=True)
 
@@ -238,8 +238,8 @@ if __name__ == "__main__":
                     with gr.Column(scale=2):
                         gr.Markdown(f'**{i18n("分句设置")}** _{i18n("参数会影响音频质量和生成速度")}_')
                         with gr.Row():
-                            max_text_tokens_per_sentence = gr.Slider(
-                                label=i18n("分句最大Token数"), value=120, minimum=20, maximum=tts.cfg.gpt.max_text_tokens, step=2, key="max_text_tokens_per_sentence",
+                            max_text_tokens_per_segment = gr.Slider(
+                                label=i18n("分句最大Token数"), value=120, minimum=20, maximum=tts.cfg.gpt.max_text_tokens, step=2, key="max_text_tokens_per_segment",
                                 info=i18n("建议80~200之间，值越大，分句越长；值越小，分句越碎；过小过大都可能导致音频质量不高"),
                             )
                         with gr.Accordion(i18n("预览分句结果"), open=True) as sentences_settings:
@@ -321,12 +321,12 @@ if __name__ == "__main__":
 
         input_text_single.change(
             on_input_text_change,
-            inputs=[input_text_single, max_text_tokens_per_sentence],
+            inputs=[input_text_single, max_text_tokens_per_segment],
             outputs=[sentences_preview]
         )
-        max_text_tokens_per_sentence.change(
+        max_text_tokens_per_segment.change(
             on_input_text_change,
-            inputs=[input_text_single, max_text_tokens_per_sentence],
+            inputs=[input_text_single, max_text_tokens_per_segment],
             outputs=[sentences_preview]
         )
         prompt_audio.upload(update_prompt_audio,
@@ -337,7 +337,7 @@ if __name__ == "__main__":
                         inputs=[emo_control_method,prompt_audio, input_text_single, emo_upload, emo_weight,
                                 vec1, vec2, vec3, vec4, vec5, vec6, vec7, vec8,
                                 emo_text,emo_random,
-                                max_text_tokens_per_sentence,
+                                max_text_tokens_per_segment,
                                 *advanced_params,
                         ],
                         outputs=[output_audio])
